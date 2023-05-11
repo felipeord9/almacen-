@@ -1,0 +1,16 @@
+.combobox-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    height: 35px;
+}
+
+.container-input {
+    position: absolute;
+    height: 100%;
+    width: 95%;
+}
+
+.container-select {
+    
+}

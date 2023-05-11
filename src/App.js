@@ -1,24 +1,33 @@
-import logo from './logo.svg';
-import './App.css';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route
+} from "react-router-dom";
+import PrivateRoute from "./components/PrivateRoute";
+import Login from "./pages/Login";
+import Home from "./pages/Home";
+import Registro from "./pages/Registro";
+import Movimientos from "./pages/Movimientos";
+import Existencias from "./pages/Existencias";
+import { UserContextProvider } from "./context/userContext";
+import "./App.css";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <UserContextProvider>
+      <Router>
+        <div className="container vw-100 min-vh-100">
+          <Routes>
+            <Route exact path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/home" element={<PrivateRoute component={Home} />} />
+            <Route path="/registro" element={<PrivateRoute component={Registro} />} />
+            <Route path="/movimientos" element={<PrivateRoute component={Movimientos} />} />
+            <Route path="/existencias" element={<PrivateRoute component={Existencias} />} />
+          </Routes>
+        </div>
+      </Router>
+    </UserContextProvider>
   );
 }
 
