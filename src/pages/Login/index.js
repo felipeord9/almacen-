@@ -1,12 +1,12 @@
 import { useState, useContext } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import Context from "../../context/userContext";
-import BD from "../../BD.json";
+import { config } from '../../config'
 import Logo from "../../assets/logo-gran-langostino.png";
 
 function Login() {
   const [numId, setNumId] = useState("");
-  const { colaborator, getColaborator } = useContext(Context)
+  const { colaborator, setColaborator } = useContext(Context)
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -17,15 +17,16 @@ function Login() {
 
   const handleClick = (e) => {
     e.preventDefault();
-    const colaborator = BD.colaboradores.find(
-      (elem) => elem["CEDULA"] === numId
-    );
-    if (colaborator) {
-      getColaborator(colaborator);
-      navigate("/home");
-    } else {
-      alert("No hay no existe");
-    }
+    fetch(`${config.apiUrl}/colaborators/${numId}`)
+    .then(res => res.json())
+    .then(res => {
+      if(res.data) {
+        setColaborator(res.data);
+        navigate("/home");
+      } else {
+        alert('No hay no existe')
+      }
+    })
   };
 
   return (

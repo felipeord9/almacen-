@@ -1,47 +1,73 @@
-import { useState, useContext } from "react";
-import sweal from 'sweetalert'
-import { config } from "../../config";
-import Context from "../../context/userContext";
-import BD from "../../BD.json";
+import { useState, useEffect, useContext } from "react";
+import sweal from "sweetalert";
+import UserContext from "../../context/userContext";
+import CellarContext from "../../context/cellarContext";
+import { getAllProducts, getOneProduct } from "../../services/productService";
+import { createMovement } from "../../services/movementService";
 import "./styles.css";
 
+const bandera = [
+  {
+    id: 0,
+    nombre: "LOGISTICA",
+  },
+  {
+    id: 1,
+    nombre: "CALIDAD",
+  },
+  {
+    id: 2,
+    nombre: "PRODUCCION",
+  },
+];
 function Registro() {
-  /* const [searchRef, setSearchRef] = useState();
-  const [searchDesc, setSearchDesc] = useState(""); */
-  const [suggestions, setSuggestions] = useState([...BD.productos]);
-  //const [amount, setAmount] = useState();
+  const { colaborator } = useContext(UserContext);
+  const { cellar } = useContext(CellarContext);
+  const [products, setProducts] = useState([]);
   const [product, setProduct] = useState(null);
+  const [suggestions, setSuggestions] = useState([...products]);
   const [search, setSearch] = useState({
     searchRef: "",
     searchDesc: "",
     amount: "",
+    flag: "",
+    note: "",
   });
-  const { colaborator } = useContext(Context);
 
-  const handleFindRef = (e) => {
+  useEffect(() => {
+    getAllProducts().then((res) => setProducts(res));
+  }, []);
+
+  const cleanForm = () => {
+    setProduct(null);
+    setSearch({
+      searchDesc: "",
+      searchRef: "",
+      amount: "",
+      flag: "",
+      note: "",
+    });
+  };
+
+  const handleFindRef = async (e) => {
     let { value } = e.target;
-    let result = 0;
     value = parseInt(value);
-    result = BD.productos.find(({ Referencia }) => Referencia === value);
+    let result = await getOneProduct(value);
     if (result) {
-      setSearch({
-        ...search,
-        searchDesc: result["Desc. item"],
-      });
       setSuggestions([result]);
       setProduct(result);
     } else {
       setProduct(null);
+      search.searchDesc = "";
     }
   };
 
   const handleFindDesc = (e) => {
+    const { value } = e.target;
     let select = document.getElementById("select-products");
     select.value = select.options[0].value;
-    let result = BD.productos.filter((product) =>
-      product["Desc. item"]
-        .toLowerCase()
-        .includes(search.searchDesc.toLowerCase())
+    let result = products.filter((product) =>
+      product.description.toLowerCase().includes(value.toLowerCase())
     );
     setSuggestions(result);
     setProduct(null);
@@ -55,94 +81,103 @@ function Registro() {
     });
   };
 
-  const handleSelect = (e) => {
+  const handleSelectProduct = async (e) => {
     const { value } = e.target;
     const ref = value.split(" ")[0];
-    const result = BD.productos.find(
-      ({ Referencia }) => Referencia === parseInt(ref)
-    );
+    const result = await getOneProduct(ref);
     setProduct(result);
     setSearch({
       ...search,
       searchRef: parseInt(ref),
-      searchDesc: result["Desc. item"],
+    });
+    setSuggestions([result]);
+  };
+
+  const handleSelectFlag = (e) => {
+    const { value } = e.target;
+
+    setSearch({
+      ...search,
+      flag: value,
     });
   };
 
   const handleClick = async (e) => {
     e.preventDefault();
+    const movementType = e.target.name;
+
     if (product && search.amount) {
-      let url = `${config.apiUrl}/movimientos/${e.target.name}`;
+      console.log(search.flag);
       const body = {
-        product,
-        colaborator,
+        productId: product.id,
+        colaboratorId: colaborator.id,
+        cellarId: cellar.id,
         amount: parseInt(search.amount),
-        date: new Date().toLocaleString("en-US"),
+        movementType,
+        note: search.note,
+        flag: (search.flag.toLowerCase()),
+        createdAt: new Date(),
       };
 
-      if (e.target.name === "salida") {
-        const auxUrl = `${config.apiUrl}/movimientos`;
+      if (movementType === "salida") {
+        const { movements } = cellar;
 
-        const movements = await fetch(auxUrl)
-          .then((res) => res.json())
-          .then((res) => res.data);
-
-        const filterEntradas = movements.entradas.filter(
-          (elem) => elem.product.Referencia === product.Referencia
-        );
-        const filterSalidas = movements.salidas.filter(
-          (elem) => elem.product.Referencia === product.Referencia
+        const filMov = movements.filter(
+          (elem) => elem.product.id === product.id && elem.flag === (search.flag).toLowerCase()
         );
 
-        const amountEntradas = filterEntradas.reduce((a, b) => a + b.amount, 0);
-        const amountSalidas = filterSalidas.reduce((a, b) => a + b.amount, 0);
+        const amountEntradas = filMov
+          .filter((elem) => elem.movementType === "entrada")
+          .reduce((a, b) => a + b.amount, 0);
+        const amountSalidas = filMov
+          .filter((elem) => elem.movementType === "salida")
+          .reduce((a, b) => a + b.amount, 0);
 
         if (amountEntradas - amountSalidas >= search.amount) {
           sweal({
             title: "ESTAS SEGURO?",
-            text: `Retiraras ${search.amount}${product["U.M."]} de ${product["Desc. item"]}`,
-            buttons: ["Cancelar", "Continuar"],
-            dangerMode: true
-          })
-          .then((deleted) => {
-            if(deleted) {
-              fetch(url, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify(body),
-              }).then((res) => res.json());
-              sweal({
-                text: "Se ha registrado la salida exitosamente!",
-                icon: 'success'
-              })
+            text: ` Vas a retirar ${search.amount}${product.um} de ${product.description}`,
+            buttons: ["Cancelar", "Si, continuar"],
+          }).then((deleted) => {
+            if (deleted) {
+              createMovement(body).then(() => {
+                sweal({
+                  text: "Se ha registrado la salida exitosamente!",
+                  icon: "success",
+                });
+              });
+              cleanForm();
             }
-          })
+          });
         } else {
           sweal({
             title: "¡ATENCION!",
             text: "No hay la cantidad suficiente para hacer el movimiento",
-            icon: 'warning',
-            button: 'Cerrar',
-            timer: 3000
-          })
+            icon: "warning",
+            button: "Cerrar",
+            dangerMode: true,
+            timer: 3000,
+          });
         }
       } else {
-        fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-        }).then((res) => res.json());
-
-        alert("Completado");
-        setProduct(null)
-        setSearch({
-          searchDesc: '',
-          searchRef: ''
-        })
+        sweal({
+          title: "ESTAS SEGURO?",
+          text: `Vas a agregar ${search.amount}${product.um} de ${product.description}`,
+          buttons: ["Cancelar", "Si, continuar"],
+          dangerMode: true
+        }).then((deleted) => {
+          if (deleted) {
+            console.log("POST");
+            createMovement(body).then((res) => {
+              console.log(res);
+              sweal({
+                text: "Se ha registrado la entrada exitosamente!",
+                icon: "success",
+              });
+            });
+            cleanForm();
+          }
+        });
       }
     } else {
       sweal({
@@ -150,11 +185,9 @@ function Registro() {
         text: "Te hace falta llenar algunos campos",
         icon: "warning",
         button: "cerrar",
-        timer: 3000
-
-      })
-      .then(() => console.log('Hello'))
-      .catch((err) => sweal(err.message, 'Error', 'error'))
+        dangerMode: true,
+        timer: 3000,
+      });
     }
   };
 
@@ -170,33 +203,31 @@ function Registro() {
         <h2 className="text-light text-center fs-5">REGISTRO DE MOVIMIENTO</h2>
         <form className="d-flex flex-column gap-2 fs-6">
           <div className="d-flex align-items-start card bg-light p-4">
-            <p>
+            <p className="m-0">
               <strong>DATOS DEL PRODUCTO</strong>
             </p>
-            <div className="d-flex flex-column justify-content-between gap-3 w-100 text-start">
+            <div className="d-flex flex-column justify-content-between gap-1 w-100 text-start">
               <div className="d-flex flex-column justify-content-start w-100">
                 <label>Codigo de producto</label>
                 <input
                   id="Referencia"
                   name="searchRef"
                   type="number"
-                  value={search.searchRef}
+                  value={product ? product.id : search.searchRef}
                   onChange={(e) => {
-                    handleFindRef(e);
                     handleChange(e);
+                    handleFindRef(e);
                   }}
                 />
               </div>
               <div className="d-flex flex-column justify-content-start w-100">
                 <label>Nombre de producto</label>
-                <div
-                  /* className="d-flex align-items-center w-100" */ className="combobox-container"
-                >
+                <div className="combobox-container">
                   <input
                     name="searchDesc"
                     type="text"
                     className="container-input"
-                    value={product ? product["Desc. item"] : search.searchDesc}
+                    value={product ? product.description : search.searchDesc}
                     onChange={(e) => {
                       handleFindDesc(e);
                       handleChange(e);
@@ -205,17 +236,40 @@ function Registro() {
                   <select
                     id="select-products"
                     className="w-100 h-100 container-select"
-                    defaultValue={0}
-                    onChange={(e) => {
-                      handleSelect(e);
-                    }}
+                    onChange={handleSelectProduct}
                   >
                     <option id={0} name="product" disabled selected>
                       -- SELECCIONE UN PRODUCTO --
                     </option>
                     {suggestions.map((product, index) => (
-                      <option id={product.Referencia} name="product">
-                        {product.Referencia + " - " + product["Desc. item"]}
+                      <option id={product.id} name="product">
+                        {product.id + " - " + product.description}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="d-flex flex-column justify-content-start w-100">
+                <label>Bandera</label>
+                <div className="combobox-container">
+                  <input
+                    name="flag"
+                    type="text"
+                    className="container-input"
+                    value={search.flag}
+                    onChange={handleChange}
+                  />
+                  <select
+                    id="select-flags"
+                    className="w-100 h-100 container-select"
+                    onChange={handleSelectFlag}
+                  >
+                    <option id={0} name="flag" disabled selected>
+                      -- SELECCIONE UNA BANDERA --
+                    </option>
+                    {bandera.map((flag, index) => (
+                      <option id={flag.id} name="flag">
+                        {flag.nombre}
                       </option>
                     ))}
                   </select>
@@ -225,7 +279,7 @@ function Registro() {
                 <label>U.M.</label>
                 <input
                   type="text"
-                  value={product ? product["U.M."] : ""}
+                  value={product ? product["um"] : ""}
                   disabled
                 />
               </div>
@@ -237,6 +291,16 @@ function Registro() {
                   value={search.amount}
                   onChange={handleChange}
                 />
+              </div>
+              <div className="input-group mt-3">
+                <span class="input-group-text">Nota</span>
+                <textarea
+                  name="note"
+                  class="form-control"
+                  aria-label="With textarea"
+                  value={search.note}
+                  onChange={handleChange}
+                ></textarea>
               </div>
             </div>
           </div>
@@ -252,6 +316,7 @@ function Registro() {
               name="salida"
               className="btn btn-danger"
               onClick={handleClick}
+              
             >
               REGISTRAR SALIDA
             </button>

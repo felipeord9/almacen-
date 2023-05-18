@@ -1,58 +1,55 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import ReactHTMLTableToExcel from "react-html-table-to-excel-3";
+import Context from "../../context/cellarContext";
 import { config } from "../../config";
 
 function Existencias() {
-  const [movements, setMovements] = useState();
-
-  useEffect(() => {
-    const url = `${config.apiUrl}/movimientos`;
-
-    fetch(url)
-      .then((res) => res.json())
-      .then((res) => {
-        setMovements(res.data);
-      });
-  }, []);
+  const { cellar } = useContext(Context)
+  //const [movements, setMovements] = useState();
 
   const calculateExistence = () => {
     let result = [];
     let currentRef = null;
-    const { entradas, salidas } = movements;
-    entradas.sort((a, b) => a.product.Referencia - b.product.Referencia);
-    salidas.sort();
+    let currentFlag = null;
+    const { movements } = cellar;
+    movements.sort((a, b) => a.product.id - b.product.id)
+    const entradas = movements.filter(elem => elem.movementType === 'entrada' && !elem.deleted)
+    const salidas = movements.filter(elem => elem.movementType === 'salida' && !elem.deleted)
 
     for (const entrada of entradas) {
-      const ref = entrada.product.Referencia;
-
-      if (ref === currentRef) {
+      const ref = entrada.product.id;
+      const flag = entrada.flag
+      if (ref === currentRef && flag === currentFlag) {
         result[result.length - 1].movements.entradas.push(entrada);
       } else {
         result.push({
           ref,
-          description: entrada.product["Desc. item"],
+          flag,
+          description: entrada.product.description,
           movements: {
             entradas: [entrada],
             salidas: [],
           },
         });
         currentRef = ref;
+        currentFlag = flag
       }
     }
 
     for (const salida of salidas) {
       for (let i = 0; i < result.length; i++) {
         currentRef = result[i].ref;
-        const ref = salida.product.Referencia;
+        currentFlag = result[i].flag
+        const ref = salida.product.id;
+        const flag = salida.flag
 
-        if (ref === currentRef) {
+        if (ref === currentRef && flag === currentFlag) {
           result[i].movements.salidas.push(salida);
         } else {
           continue;
         }
       }
     }
-    console.log(result);
     return result;
   };
 
@@ -90,14 +87,16 @@ function Existencias() {
               <th>Ref.</th>
               <th>Descripcion</th>
               <th>Existencia</th>
+              <th>Bandera</th>
+              <th>U.M</th>
             </tr>
           </thead>
           <tbody>
-            {movements
+            {cellar.movements
               ? calculateExistence().map((elemt) => (
                   <tr>
-                    <td>{elemt.ref}</td>
-                    <td>{elemt.description}</td>
+                    <td>{elemt.movements.entradas[0].product.id}</td>
+                    <td>{elemt.movements.entradas[0].product.description}</td>
                     <td>
                       {elemt.movements.entradas.reduce(
                         (a, b) => a + b.amount,
@@ -108,6 +107,8 @@ function Existencias() {
                           0
                         )}
                     </td>
+                    <td>{elemt.movements.entradas[0].flag}</td>
+                    <td>{elemt.movements.entradas[0].product.um}</td>
                   </tr>
                 ))
               : null}
