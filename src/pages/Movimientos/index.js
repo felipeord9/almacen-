@@ -3,7 +3,6 @@ import ReactHTMLTableToExcel from "react-html-table-to-excel-3";
 import sweal from "sweetalert";
 import TableMovements from "../../components/TableMovements";
 import Context from "../../context/cellarContext";
-import { config } from "../../config";
 import LogoExcel from "../../assets/logo-xls.png";
 import "./styles.css";
 
@@ -14,17 +13,8 @@ function Movimientos() {
   const [filterMovements, setFilterMovements] = useState([]);
   
   useEffect(() => {
-    const url = `${config.apiUrl}/movements`;
-
-    //setMovements(cellar.movements);
     setFilterMovements(cellar.movements);
-    /* fetch(url)
-      .then((res) => res.json())
-      .then((res) => {
-        setMovements(res.data);
-        setFilterMovements(res.data);
-      }); */
-  }, []);
+  }, [cellar.movements]);
 
   const handleChange = (e) => {
     const { value } = e.target;
@@ -36,10 +26,7 @@ function Movimientos() {
     const filMov = cellar.movements.filter(
       (elem) => parseInt(search) === elem.product.id && !elem.deleted
     );
-    /* const salidas = movements.salidas.filter(
-      (elem) => parseInt(search) === elem.product.Referencia
-    ); */
-    //if (entradas.length > 0 || salidas.length > 0) {
+
     if (filMov.length > 0) {
       const amountEntradas = filMov
         .filter((elem) => elem.movementType === "entrada")
@@ -47,17 +34,6 @@ function Movimientos() {
       const amountSalidas = filMov
         .filter((elem) => elem.movementType === "salida")
         .reduce((a, b) => a + b.amount, 0);
-      //const amountEntradas = entradas.reduce((a, b) => a + b.amount, 0);
-      //const amountSalidas = salidas.reduce((a, b) => a + b.amount, 0);
-
-      /* const object = {
-        entradas,
-        salidas,
-        amount: {
-          amountEntradas,
-          amountSalidas,
-        },
-      }; */
       setAmount({
         amountEntradas,
         amountSalidas,
@@ -178,6 +154,7 @@ function Movimientos() {
               <th>Estado</th>
               <th>Eliminado Por</th>
               <th>Fecha Eliminacion</th>
+              <th>Motivo de Eliminacion</th>
             </tr>
           </thead>
           <tbody>
@@ -195,6 +172,7 @@ function Movimientos() {
                     <td>{elem.deleted ? "ELIMINADO" : "ACTIVO"}</td>
                     <td>{elem.deletedBy}</td>
                     <td>{elem.deletedAt ? new Date(elem.deletedAt).toLocaleString("en-US") : ""}</td>
+                    <td>{elem.removalReason}</td>
                   </tr>
                 ))
               : null}

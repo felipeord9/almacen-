@@ -1,24 +1,32 @@
 import { useContext, useState, useEffect } from "react";
+import ReactHTMLTableToExcel from "react-html-table-to-excel-3";
+import { useNavigate } from "react-router-dom";
 import sweal from "sweetalert";
 import Context from "../../context/userContext";
 import Card from "../../components/Card";
 import Graph from "../../components/Graph";
 import { config } from "../../config";
-import { useNavigate } from "react-router-dom";
-import LogoLangostino from "../../assets/logo-gran-langostino.png";
+import LogoExcel from "../../assets/logo-xls.png";
 
 function Home() {
   const { colaborator, setColaborator } = useContext(Context);
   const [cellers, setCellers] = useState([]);
+  const [infoTable, setInfoTable] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const url = `${config.apiUrl}/cellars/total`;
+    const url = `${config.apiUrl}/cellars`;
 
-    fetch(url)
+    fetch(`${url}/total`)
       .then((res) => res.json())
       .then((res) => {
         setCellers(res.data);
+      });
+
+    fetch(`${url}/existence`)
+      .then((res) => res.json())
+      .then((res) => {
+        setInfoTable(res.data);
       });
   }, []);
 
@@ -82,16 +90,48 @@ function Home() {
                 </div>
               ))
             : null}
-          {/* <div >
-            <div className="d-flex align-items-center">
-              <img className="" src={LogoLangostino} alt="#" />
-            </div>
-          </div> */}
-          {/*           <Card nombre="BODEGA 2" redirect="/modulos/?bodega=2" />
-          <Card nombre="BODEGA 3" redirect="/modulos/?bodega=3" />
-          <Card nombre="BODEGA 4" redirect="/modulos/?bodega=4" /> */}
+          <div className="d-flex align-items-end justify-content-center">
+            <ReactHTMLTableToExcel
+              id="movements-xls-button"
+              className="d-flex flex-row align-items-center btn btn-success p-2 w-100 gap-2"
+              table="table-existence"
+              filename="Existencia-Bodegas"
+              filetype="xls"
+              sheet="existencias"
+              format="xls"
+            >
+              <img src={LogoExcel} className="img-download" alt="" />
+              <strong>Descargar Existencias de Bodegas</strong>
+            </ReactHTMLTableToExcel>
+          </div>
         </div>
       </div>
+      <table
+        id="table-existence"
+        className="d-none"
+        style={{ fontSize: 11 }}
+      >
+        <thead>
+          <tr>
+            <th>Ref.</th>
+            <th>Description</th>
+            <th>Existencia</th>
+            <th>U.M.</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            infoTable.map(item => (
+              <tr>
+                <td>{item.id}</td>
+                <td>{item.description}</td>
+                <td>{item.total}</td>
+                <td>{item.um}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
     </div>
   );
 }

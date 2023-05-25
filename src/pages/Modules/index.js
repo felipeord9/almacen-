@@ -12,7 +12,8 @@ function Modules() {
     fetch(`${config.apiUrl}/cellars/${query.get('bodega')}`)
       .then(res => res.json())
       .then(res => getCellar(res.data))
-  }, [])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getCellar])
 
   return (
     <div className="container d-flex flex-column vh-100 w-100 pt-4">

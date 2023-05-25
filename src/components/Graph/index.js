@@ -10,7 +10,8 @@ function Graph({ capMax, capOcup }) {
       {
         data: [capOcup, capMax - capOcup],
         backgroundColor: ["#d34240", "#5dc460"],
-        hoverBackgroundColor: ["#FF6294", "#36A2EB"],
+        hoverBackgroundColor: ["#d34240", "#5dc460"],
+        //hoverBackgroundColor: ["#FF6294", "#36A2EB"],
       },
     ],
   };
@@ -26,13 +27,6 @@ function Graph({ capMax, capOcup }) {
     width: 10,
     height: 10
   }
-
-  /* const options = {
-    maintainAspectRatio: true,
-    responsive: false,
-    width: 20, // Ancho deseado del gráfico en píxeles
-    height: 50, // Alto deseado del gráfico en píxeles
-  } */
 
   return (
     <div className="h-100 pt-2">

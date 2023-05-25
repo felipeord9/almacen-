@@ -20,12 +20,13 @@ const bandera = [
     nombre: "PRODUCCION",
   },
 ];
+
 function Registro() {
   const { colaborator } = useContext(UserContext);
   const { cellar } = useContext(CellarContext);
   const [products, setProducts] = useState([]);
   const [product, setProduct] = useState(null);
-  const [suggestions, setSuggestions] = useState([...products]);
+  const [suggestions, setSuggestions] = useState([]);
   const [search, setSearch] = useState({
     searchRef: "",
     searchDesc: "",
@@ -35,7 +36,10 @@ function Registro() {
   });
 
   useEffect(() => {
-    getAllProducts().then((res) => setProducts(res));
+    getAllProducts().then((res) => {
+      setProducts(res);
+      setSuggestions(res);
+    });
   }, []);
 
   const cleanForm = () => {
@@ -57,8 +61,9 @@ function Registro() {
       setSuggestions([result]);
       setProduct(result);
     } else {
-      setProduct(null);
       search.searchDesc = "";
+      setProduct(null);
+      setSuggestions(products)
     }
   };
 
@@ -71,6 +76,7 @@ function Registro() {
     );
     setSuggestions(result);
     setProduct(null);
+    search.searchRef = ""
   };
 
   const handleChange = (e) => {
@@ -107,7 +113,6 @@ function Registro() {
     const movementType = e.target.name;
 
     if (product && search.amount) {
-      console.log(search.flag);
       const body = {
         productId: product.id,
         colaboratorId: colaborator.id,
@@ -115,7 +120,7 @@ function Registro() {
         amount: parseInt(search.amount),
         movementType,
         note: search.note,
-        flag: (search.flag.toLowerCase()),
+        flag: search.flag.toLowerCase(),
         createdAt: new Date(),
       };
 
@@ -123,7 +128,9 @@ function Registro() {
         const { movements } = cellar;
 
         const filMov = movements.filter(
-          (elem) => elem.product.id === product.id && elem.flag === (search.flag).toLowerCase()
+          (elem) =>
+            elem.product.id === product.id &&
+            elem.flag === search.flag.toLowerCase()
         );
 
         const amountEntradas = filMov
@@ -164,12 +171,10 @@ function Registro() {
           title: "ESTAS SEGURO?",
           text: `Vas a agregar ${search.amount}${product.um} de ${product.description}`,
           buttons: ["Cancelar", "Si, continuar"],
-          dangerMode: true
+          dangerMode: true,
         }).then((deleted) => {
           if (deleted) {
-            console.log("POST");
             createMovement(body).then((res) => {
-              console.log(res);
               sweal({
                 text: "Se ha registrado la entrada exitosamente!",
                 icon: "success",
@@ -292,7 +297,7 @@ function Registro() {
                   onChange={handleChange}
                 />
               </div>
-              <div className="input-group mt-3">
+              <div className="input-group mt-2">
                 <span class="input-group-text">Nota</span>
                 <textarea
                   name="note"
@@ -316,7 +321,6 @@ function Registro() {
               name="salida"
               className="btn btn-danger"
               onClick={handleClick}
-              
             >
               REGISTRAR SALIDA
             </button>

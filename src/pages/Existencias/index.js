@@ -1,11 +1,9 @@
-import { useState, useEffect, useContext } from "react";
+import { useContext } from "react";
 import ReactHTMLTableToExcel from "react-html-table-to-excel-3";
 import Context from "../../context/cellarContext";
-import { config } from "../../config";
 
 function Existencias() {
   const { cellar } = useContext(Context)
-  //const [movements, setMovements] = useState();
 
   const calculateExistence = () => {
     let result = [];
