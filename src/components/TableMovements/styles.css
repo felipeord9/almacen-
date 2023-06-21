@@ -8,6 +8,11 @@
     overflow: hidden;
 }
 
+.table-body th {
+    position: sticky;
+    top: 0;
+}
+
 .img-options {
     width: 15px;
 }

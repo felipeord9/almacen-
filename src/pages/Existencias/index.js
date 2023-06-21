@@ -1,5 +1,7 @@
 import { useContext } from "react";
-import ReactHTMLTableToExcel from "react-html-table-to-excel-3";
+import TableExistences from "../../components/TableExistences";
+import ButtonDownload from "../../components/ButtonDownload";
+import ButtonBack from "../../components/ButtonBack";
 import Context from "../../context/cellarContext";
 
 function Existencias() {
@@ -52,15 +54,21 @@ function Existencias() {
   };
 
   return (
-    <div className="container text-light pt-4">
+    <div className="text-light pt-4">
       <div className="d-flex flex-row align-items-center justify-content-between mb-3">
-        <button
+        {/* <button
           className="btn btn-secondary"
           onClick={(e) => window.history.back()}
         >
           {"volver atras"}
-        </button>
-        <ReactHTMLTableToExcel
+        </button> */}
+        <ButtonBack/>
+        <ButtonDownload 
+        table="table-existence"
+        fileName="Existencias"
+        sheet="existencias"
+        />
+        {/* <ReactHTMLTableToExcel
           id="existence-xls-button"
           className="btn btn-success"
           table="table-existence"
@@ -69,15 +77,17 @@ function Existencias() {
           sheet="existencias"
         >
           Descargar
-        </ReactHTMLTableToExcel>
+        </ReactHTMLTableToExcel> */}
       </div>
-      <div className="fs-6 text-center">
-        <h2>EXISTENCIA EN BODEGA</h2>
+      <div className="fs-6 text-center text-dark">
+        <h2><strong>EXISTENCIA EN BODEGA</strong></h2>
       </div>
-      <div className="table-resposive">
+
+      <TableExistences />
+      {/* <div className="table-resposive">
         <table
           id="table-existence"
-          className="table table-dark table-middle text-center table-bordered"
+          className="table table-secondary table-striped text-center table-bordered"
           style={{ fontSize: 11 }}
         >
           <thead>
@@ -112,7 +122,7 @@ function Existencias() {
               : null}
           </tbody>
         </table>
-      </div>
+      </div> */}
     </div>
   );
 }

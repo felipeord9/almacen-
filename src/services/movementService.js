@@ -21,7 +21,6 @@ function createMovement(data) {
 }
 
 function updateMovement(id, changes) {
-  alert(id)
   return fetch(`${url}/${id}`, {
     method: "PATCH",
     headers: {
