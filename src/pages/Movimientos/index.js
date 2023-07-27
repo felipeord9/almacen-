@@ -176,7 +176,7 @@ function Movimientos() {
             <th>Cantidad</th>
             <th>Colaborador</th>
             <th>Movimiento</th>
-            <th>Bandera</th>
+            <th>Posición</th>
             <th>Fecha Creacion</th>
             <th>Estado</th>
             <th>Nota</th>
@@ -195,7 +195,7 @@ function Movimientos() {
                   <td>{elem.amount}</td>
                   <td>{elem.colaborator.nombre}</td>
                   <td>{elem.movementType}</td>
-                  <td>{elem.flag}</td>
+                  <td>{elem.position.name}</td>
                   <td>{new Date(elem.createdAt).toLocaleString("en-US")}</td>
                   <td>{elem.deleted ? "ELIMINADO" : "ACTIVO"}</td>
                   <td>{elem.note}</td>

@@ -113,7 +113,7 @@ function TableMovements({ filterMovements, option }) {
           <th>U.M</th>
           <th>Cantidad</th>
           <th>Colaborador</th>
-          <th>Hablador</th>
+          <th>Posición</th>
           <th>Creacion</th>
           <th>Vence</th>
           <th></th>
