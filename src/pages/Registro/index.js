@@ -66,7 +66,7 @@ function Registro() {
         </div>
         {showEntrada && <MovementForm typeForm={"entrada"} />}
         {showSalida && (
-          <div className="d-flex flex-row gap-1" style={{ height: "65vh" }}>
+          <div className="reverse d-flex flex-row gap-1" style={{ height: "63vh" }}>
             <MovementForm
               typeForm={"salida"}
               infoMovement={infoMovement}

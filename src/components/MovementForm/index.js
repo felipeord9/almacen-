@@ -4,35 +4,22 @@ import CellarContext from "../../context/cellarContext";
 import UserContext from "../../context/userContext";
 import { getAllProducts, getOneProduct } from "../../services/productService";
 import { createMovement } from "../../services/movementService";
-import "./styles.css";
+import { getAllPositions } from "../../services/positionService";
 import { config } from "../../config";
-
-const bandera = [
-  {
-    id: 0,
-    nombre: "LOGISTICA",
-  },
-  {
-    id: 1,
-    nombre: "CALIDAD",
-  },
-  {
-    id: 2,
-    nombre: "PRODUCCION",
-  },
-];
+import "./styles.css";
 
 function MovementForm({ typeForm, ...props }) {
   const { colaborator } = useContext(UserContext);
   const { cellar, setCellar } = useContext(CellarContext);
   const [products, setProducts] = useState([]);
   const [product, setProduct] = useState(null);
+  const [positions, setPositions] = useState(null);
   const [suggestions, setSuggestions] = useState([]);
   const [search, setSearch] = useState({
     searchRef: "",
     searchDesc: "",
     amount: "",
-    flag: "",
+    position: "",
     note: "",
     dueDate: "",
   });
@@ -42,6 +29,7 @@ function MovementForm({ typeForm, ...props }) {
       setProducts(res);
       setSuggestions(res);
     });
+    getAllPositions().then((data) => setPositions(data));
   }, []);
 
   const getMovements = () => {
@@ -66,7 +54,7 @@ function MovementForm({ typeForm, ...props }) {
         setSearch({
           ...search,
           searchRef: infoMovement.id,
-          flag: infoMovement.flag,
+          position: infoMovement.position,
           dueDate: infoMovement.dueDate,
         });
       }
@@ -83,7 +71,7 @@ function MovementForm({ typeForm, ...props }) {
       searchRef: "",
       searchDesc: "",
       amount: "",
-      flag: "",
+      position: "",
       note: "",
       dueDate: "",
     });
@@ -105,7 +93,7 @@ function MovementForm({ typeForm, ...props }) {
       }
       if (search) {
         search.searchDesc = "";
-        search.flag = "";
+        search.position = "";
         setProduct(null);
         setSuggestions(products);
       } else {
@@ -127,6 +115,7 @@ function MovementForm({ typeForm, ...props }) {
   };
 
   const handleChange = (e) => {
+    console.log("Handle Change");
     let { value, name } = e.target;
     setSearch({
       ...search,
@@ -148,17 +137,17 @@ function MovementForm({ typeForm, ...props }) {
 
   const handleSelectFlag = (e) => {
     const { value } = e.target;
-
+    console.log("Posicion: ", value);
     setSearch({
       ...search,
-      flag: value,
+      position: value,
     });
   };
 
   const handleClick = async (e) => {
     e.preventDefault();
     const movementType = e.target.name;
-    if (product && search.amount && search.flag && search.dueDate) {
+    if (product && search.amount && search.position && search.dueDate) {
       const body = {
         productId: product.id,
         colaboratorId: colaborator.id,
@@ -166,7 +155,7 @@ function MovementForm({ typeForm, ...props }) {
         amount: parseInt(search.amount),
         movementType,
         note: search.note,
-        flag: search.flag.toLowerCase(),
+        positionId: parseInt(search.position.split(" ")[1]),
         dueDate: search.dueDate,
         createdAt: new Date(),
       };
@@ -175,11 +164,13 @@ function MovementForm({ typeForm, ...props }) {
         const { movements } = await getMovements();
         const filMov = movements.filter(
           (elem) =>
-            elem.product.id === product.id &&
-            elem.flag === search.flag.toLowerCase() &&
-            elem.dueDate === search.dueDate &&
-            elem.deleted === false
+          elem.product.id === product.id &&
+          elem.position.name === search.position &&
+          elem.dueDate === search.dueDate &&
+          elem.deleted === false
         );
+
+        console.log(search.position)
 
         const amountEntradas = filMov
           .filter(
@@ -205,7 +196,7 @@ function MovementForm({ typeForm, ...props }) {
               const filMov = movements.filter(
                 (elem) =>
                   elem.product.id === product.id &&
-                  elem.flag === search.flag.toLowerCase() &&
+                  elem.position.name === search.position &&
                   elem.dueDate === search.dueDate &&
                   elem.deleted === false
               );
@@ -358,39 +349,27 @@ function MovementForm({ typeForm, ...props }) {
             </div>
           </div>
           <div className="d-flex flex-column justify-content-start">
-            <label>Hablador</label>
+            <label>Posición</label>
             <div className="combobox-container">
-              <input
-                name="flag"
-                type="text"
-                className={
-                  typeForm === "salida"
-                    ? "form-control"
-                    : "container-input form-control"
-                }
-                value={
-                  !props.infoMovement
-                    ? search.flag
-                    : props.infoMovement.flag.toUpperCase()
-                }
-                onChange={handleChange}
-                disabled={typeForm === "salida" ? true : false}
-              />
               <select
-                id="select-flags"
-                className={
-                  typeForm === "salida"
-                    ? "d-none"
-                    : "w-100 h-100 container-select form-select"
+                id="select-positions"
+                className="w-100 h-100 container-select form-select"
+                onInput={handleSelectFlag}
+                value={
+                  search.position
+                    ? search.position
+                    : props.infoMovement
+                    ? props.infoMovement.position
+                    : null
                 }
-                onChange={handleSelectFlag}
+                disabled={typeForm === "salida" && true}
               >
-                <option id={0} name="flag" disabled selected>
-                  -- SELECCIONAR HABLADOR --
+                <option id={0} name="position" disabled selected>
+                  -- SELECCIONAR POSICIÓN --
                 </option>
-                {bandera.map((flag, index) => (
-                  <option id={flag.id} name="flag">
-                    {flag.nombre}
+                {positions?.map((position, index) => (
+                  <option id={position.id} name="position">
+                    {position.name}
                   </option>
                 ))}
               </select>

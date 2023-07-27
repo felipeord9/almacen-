@@ -32,12 +32,12 @@ function TableExistences({ getInfo, productId, getFunction }) {
 
   const handleClick = (e) => {
     const {id} = e.target.parentNode
-    const [newId, description, flag, um, dueDate] = id.split('@')
-    console.log(e.target)
+    const [newId, description, position, um, dueDate] = id.split('@')
+    
     getInfo({
       id: newId,
       description,
-      flag,
+      position,
       um,
       dueDate: new Date(dueDate).toISOString().split('T')[0]
     })
@@ -55,7 +55,7 @@ function TableExistences({ getInfo, productId, getFunction }) {
             <tr>
               <th>Ref.</th>
               <th>Descripcion</th>
-              <th>Hablador</th>
+              <th>Posición</th>
               <th>Existencia</th>
               <th>U.M</th>
               <th>Vence</th>
@@ -66,12 +66,12 @@ function TableExistences({ getInfo, productId, getFunction }) {
               ? suggestions.map((elemt) => (
                 elemt.total > 0 &&
                   <tr
-                    id={`${elemt.id}@${elemt.description}@${elemt.flag}@${elemt.um}@${elemt.due_date}`}
+                    id={`${elemt.id}@${elemt.description}@${elemt.position}@${elemt.um}@${elemt.due_date}`}
                     onClick={getInfo ? handleClick : null} 
                   >
                     <td>{elemt.id}</td>
                     <td>{elemt.description}</td>
-                    <td>{elemt.flag.toUpperCase()}</td>
+                    <td>{elemt.position}</td>
                     <td>{elemt.total}</td>
                     <td>{elemt.um}</td>
                     <td>{elemt.due_date}</td>

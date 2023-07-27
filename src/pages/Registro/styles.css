@@ -17,3 +17,10 @@
     transition: 1s;
 }
 
+@media (max-width: 767px) {
+  .reverse {
+      display: flex;
+      flex-direction: column-reverse !important;
+      height: 100% !important;
+  }
+}

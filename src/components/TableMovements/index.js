@@ -130,9 +130,9 @@ function TableMovements({ filterMovements, option }) {
                   <td>{elem.product.um}</td>
                   <td>{elem.amount}</td>
                   <td>{elem.colaborator.nombre}</td>
-                  <td>{elem.flag.toUpperCase()}</td>
+                  <td style={{ whiteSpace:'nowrap'}}>{elem.position.name}</td>
                   <td>{new Date(elem.createdAt).toLocaleString("en-US")}</td>
-                  <td>{elem.dueDate}</td>
+                  <td style={{ whiteSpace:'nowrap'}}>{elem.dueDate}</td>
                   <td className="fs-6">
                     <button
                       id={`${elem.id}-${elem.product.id}`}
