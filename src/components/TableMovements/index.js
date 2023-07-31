@@ -115,7 +115,6 @@ function TableMovements({ filterMovements, option }) {
           <th>Colaborador</th>
           <th>Posición</th>
           <th>Creacion</th>
-          <th>Vence</th>
           <th></th>
         </tr>
       </thead>
@@ -132,7 +131,6 @@ function TableMovements({ filterMovements, option }) {
                   <td>{elem.colaborator.nombre}</td>
                   <td style={{ whiteSpace:'nowrap'}}>{elem.position.name}</td>
                   <td>{new Date(elem.createdAt).toLocaleString("en-US")}</td>
-                  <td style={{ whiteSpace:'nowrap'}}>{elem.dueDate}</td>
                   <td className="fs-6">
                     <button
                       id={`${elem.id}-${elem.product.id}`}

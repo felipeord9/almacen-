@@ -32,14 +32,13 @@ function TableExistences({ getInfo, productId, getFunction }) {
 
   const handleClick = (e) => {
     const {id} = e.target.parentNode
-    const [newId, description, position, um, dueDate] = id.split('@')
+    const [newId, description, position, um] = id.split('@')
     
     getInfo({
       id: newId,
       description,
       position,
-      um,
-      dueDate: new Date(dueDate).toISOString().split('T')[0]
+      um
     })
   }
 
@@ -58,7 +57,6 @@ function TableExistences({ getInfo, productId, getFunction }) {
               <th>Posición</th>
               <th>Existencia</th>
               <th>U.M</th>
-              <th>Vence</th>
             </tr>
           </thead>
           <tbody>
@@ -74,7 +72,6 @@ function TableExistences({ getInfo, productId, getFunction }) {
                     <td>{elemt.position}</td>
                     <td>{elemt.total}</td>
                     <td>{elemt.um}</td>
-                    <td>{elemt.due_date}</td>
                   </tr>
                 ))
               : null}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import sweal from "sweetalert";
 import CellarContext from "../../context/cellarContext";
 import UserContext from "../../context/userContext";
@@ -20,9 +20,9 @@ function MovementForm({ typeForm, ...props }) {
     searchDesc: "",
     amount: "",
     position: "",
-    note: "",
-    dueDate: "",
+    note: ""
   });
+  const selectPositionRef = useRef()
 
   useEffect(() => {
     getAllProducts().then((res) => {
@@ -54,8 +54,7 @@ function MovementForm({ typeForm, ...props }) {
         setSearch({
           ...search,
           searchRef: infoMovement.id,
-          position: infoMovement.position,
-          dueDate: infoMovement.dueDate,
+          position: infoMovement.position
         });
       }
     }
@@ -67,13 +66,13 @@ function MovementForm({ typeForm, ...props }) {
       props.setInfoMovement(null);
     }
     setProduct(null);
+    selectPositionRef.current.selectedIndex = 0
     setSearch({
       searchRef: "",
       searchDesc: "",
       amount: "",
       position: "",
-      note: "",
-      dueDate: "",
+      note: ""
     });
   };
 
@@ -115,7 +114,6 @@ function MovementForm({ typeForm, ...props }) {
   };
 
   const handleChange = (e) => {
-    console.log("Handle Change");
     let { value, name } = e.target;
     setSearch({
       ...search,
@@ -137,7 +135,6 @@ function MovementForm({ typeForm, ...props }) {
 
   const handleSelectFlag = (e) => {
     const { value } = e.target;
-    console.log("Posicion: ", value);
     setSearch({
       ...search,
       position: value,
@@ -147,7 +144,7 @@ function MovementForm({ typeForm, ...props }) {
   const handleClick = async (e) => {
     e.preventDefault();
     const movementType = e.target.name;
-    if (product && search.amount && search.position && search.dueDate) {
+    if (product && search.amount && search.position) {
       const body = {
         productId: product.id,
         colaboratorId: colaborator.id,
@@ -156,7 +153,6 @@ function MovementForm({ typeForm, ...props }) {
         movementType,
         note: search.note,
         positionId: parseInt(search.position.split(" ")[1]),
-        dueDate: search.dueDate,
         createdAt: new Date(),
       };
 
@@ -166,22 +162,19 @@ function MovementForm({ typeForm, ...props }) {
           (elem) =>
           elem.product.id === product.id &&
           elem.position.name === search.position &&
-          elem.dueDate === search.dueDate &&
           elem.deleted === false
         );
-
-        console.log(search.position)
 
         const amountEntradas = filMov
           .filter(
             (elem) =>
-              elem.movementType === "entrada" && elem.dueDate === search.dueDate
+              elem.movementType === "entrada" && elem.position.name === search.position
           )
           .reduce((a, b) => a + b.amount, 0);
         const amountSalidas = filMov
           .filter(
             (elem) =>
-              elem.movementType === "salida" && elem.dueDate === search.dueDate
+              elem.movementType === "salida" && elem.position.name === search.position
           )
           .reduce((a, b) => a + b.amount, 0);
 
@@ -197,7 +190,6 @@ function MovementForm({ typeForm, ...props }) {
                 (elem) =>
                   elem.product.id === product.id &&
                   elem.position.name === search.position &&
-                  elem.dueDate === search.dueDate &&
                   elem.deleted === false
               );
 
@@ -205,14 +197,14 @@ function MovementForm({ typeForm, ...props }) {
                 .filter(
                   (elem) =>
                     elem.movementType === "entrada" &&
-                    elem.dueDate === search.dueDate
+                    elem.position.name === search.position
                 )
                 .reduce((a, b) => a + b.amount, 0);
               const amountSalidas = filMov
                 .filter(
                   (elem) =>
                     elem.movementType === "salida" &&
-                    elem.dueDate === search.dueDate
+                    elem.position.name === search.position
                 )
                 .reduce((a, b) => a + b.amount, 0);
 
@@ -253,7 +245,7 @@ function MovementForm({ typeForm, ...props }) {
       } else {
         sweal({
           title: "ESTAS SEGURO?",
-          text: `Vas a **AGREGAR** ${search.amount}${product.um} de ${product.description} ${search.dueDate}`,
+          text: `Vas a **AGREGAR** ${search.amount}${product.um} de ${product.description} - ${search.position}`,
           confirmButtonText: "Aceptar",
           buttons: ["Cancelar", "Si, continuar"],
           dangerMode: true,
@@ -353,6 +345,7 @@ function MovementForm({ typeForm, ...props }) {
             <div className="combobox-container">
               <select
                 id="select-positions"
+                ref={selectPositionRef}
                 className="w-100 h-100 container-select form-select"
                 onInput={handleSelectFlag}
                 value={
@@ -390,7 +383,7 @@ function MovementForm({ typeForm, ...props }) {
               disabled
             />
           </div>
-          <div className="d-flex flex-column justify-content-start w-100">
+          {/* <div className="d-flex flex-column justify-content-start w-100">
             <label>Fecha de vencimiento</label>
             <input
               name="dueDate"
@@ -402,7 +395,7 @@ function MovementForm({ typeForm, ...props }) {
               disabled={typeForm === "salida" ? true : false}
               onChange={handleChange}
             />
-          </div>
+          </div> */}
           <div className="d-flex flex-column justify-content-start w-100">
             <label>Cantidad</label>
             <input
