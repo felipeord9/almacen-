@@ -64,8 +64,8 @@ function TableExistences({ getInfo, productId, getFunction }) {
               ? suggestions.map((elemt) => (
                 elemt.total > 0 &&
                   <tr
-                    id={`${elemt.id}@${elemt.description}@${elemt.position}@${elemt.um}@${elemt.due_date}`}
-                    onClick={getInfo ? handleClick : null} 
+                    id={`${elemt.id}@${elemt.description}@${elemt.position}@${elemt.um}`}
+                    onClick={getInfo ? (e) => getInfo(elemt) : null} 
                   >
                     <td>{elemt.id}</td>
                     <td>{elemt.description}</td>

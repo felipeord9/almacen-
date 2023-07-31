@@ -20,9 +20,9 @@ function MovementForm({ typeForm, ...props }) {
     searchDesc: "",
     amount: "",
     position: "",
-    note: ""
+    note: "",
   });
-  const selectPositionRef = useRef()
+  const selectPositionRef = useRef();
 
   useEffect(() => {
     getAllProducts().then((res) => {
@@ -54,7 +54,7 @@ function MovementForm({ typeForm, ...props }) {
         setSearch({
           ...search,
           searchRef: infoMovement.id,
-          position: infoMovement.position
+          position: infoMovement.position,
         });
       }
     }
@@ -66,13 +66,13 @@ function MovementForm({ typeForm, ...props }) {
       props.setInfoMovement(null);
     }
     setProduct(null);
-    selectPositionRef.current.selectedIndex = 0
+    selectPositionRef.current.selectedIndex = 0;
     setSearch({
       searchRef: "",
       searchDesc: "",
       amount: "",
       position: "",
-      note: ""
+      note: "",
     });
   };
 
@@ -152,7 +152,7 @@ function MovementForm({ typeForm, ...props }) {
         amount: parseInt(search.amount),
         movementType,
         note: search.note,
-        positionId: parseInt(search.position.split(" ")[1]),
+        positionId: props.infoMovement ? props.infoMovement.position_id : search.position,
         createdAt: new Date(),
       };
 
@@ -160,21 +160,23 @@ function MovementForm({ typeForm, ...props }) {
         const { movements } = await getMovements();
         const filMov = movements.filter(
           (elem) =>
-          elem.product.id === product.id &&
-          elem.position.name === search.position &&
-          elem.deleted === false
+            elem.product.id === product.id &&
+            elem.position.name === search.position &&
+            elem.deleted === false
         );
 
         const amountEntradas = filMov
           .filter(
             (elem) =>
-              elem.movementType === "entrada" && elem.position.name === search.position
+              elem.movementType === "entrada" &&
+              elem.position.name === search.position
           )
           .reduce((a, b) => a + b.amount, 0);
         const amountSalidas = filMov
           .filter(
             (elem) =>
-              elem.movementType === "salida" && elem.position.name === search.position
+              elem.movementType === "salida" &&
+              elem.position.name === search.position
           )
           .reduce((a, b) => a + b.amount, 0);
 
@@ -347,21 +349,26 @@ function MovementForm({ typeForm, ...props }) {
                 id="select-positions"
                 ref={selectPositionRef}
                 className="w-100 h-100 container-select form-select"
-                onInput={handleSelectFlag}
-                value={
+                onChange={handleSelectFlag}
+                /* value={
                   search.position
                     ? search.position
                     : props.infoMovement
                     ? props.infoMovement.position
                     : null
-                }
+                } */
+                value={props?.infoMovement?.position_id}
                 disabled={typeForm === "salida" && true}
               >
-                <option id={0} name="position" disabled selected>
+                <option id={0} name="position" value='' disabled selected>
                   -- SELECCIONAR POSICIÓN --
                 </option>
                 {positions?.map((position, index) => (
-                  <option id={position.id} name="position">
+                  <option
+                    id={position.id}
+                    value={position.id}
+                    name="position"
+                  >
                     {position.name}
                   </option>
                 ))}

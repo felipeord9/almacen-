@@ -51,7 +51,7 @@ function TableMovements({ filterMovements, option }) {
         closeModal: false,
       },
     }).then((password) => {
-      if (password !== "123") {
+      if (password !== "1118298640") {
         return sweal({
           text: "Contrasena Incorrecta",
           icon: "error",
