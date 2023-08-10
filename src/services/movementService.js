@@ -17,7 +17,7 @@ function createMovement(data) {
     body: JSON.stringify(data),
   })
     .then((res) => res.json())
-    .then((res) => console.log(data));
+    .then((res) => res);
 }
 
 function updateMovement(id, changes) {

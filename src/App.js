@@ -7,6 +7,7 @@ import Registro from "./pages/Registro";
 import Movimientos from "./pages/Movimientos";
 import Existencias from "./pages/Existencias";
 import Modules from "./pages/Modules";
+import VerProductos from "./pages/VerProductos";
 import Inactivity from "./components/Inactivity"
 import { UserContextProvider } from "./context/userContext";
 import { CellarContextProvider } from "./context/cellarContext";
@@ -77,6 +78,10 @@ function App() {
               <Route
                 path="/existencias"
                 element={<PrivateRoute component={Existencias} />}
+              />
+              <Route
+                path="/ver/productos"
+                element={<PrivateRoute component={VerProductos} />}
               />
             </Routes>
           </div>

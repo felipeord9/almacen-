@@ -124,21 +124,21 @@ function TableMovements({ filterMovements, option }) {
               .filter((elem) => elem.movementType === option && !elem.deleted)
               .map((elem, index) => (
                 <tr key={index}>
-                  <td>{elem.product.id}</td>
-                  <td>{elem.product.description}</td>
-                  <td>{elem.product.um}</td>
-                  <td>{elem.amount}</td>
-                  <td>{elem.colaborator.nombre}</td>
-                  <td style={{ whiteSpace:'nowrap'}}>{elem.position.name}</td>
-                  <td>{new Date(elem.createdAt).toLocaleString("en-US")}</td>
+                  <td>{elem.product?.id}</td>
+                  <td>{elem.product?.description}</td>
+                  <td>{elem.product?.um}</td>
+                  <td>{elem?.amount}</td>
+                  <td>{elem.colaborator?.nombre}</td>
+                  <td style={{ whiteSpace:'nowrap'}}>{elem?.position.name}</td>
+                  <td>{new Date(elem?.createdAt).toLocaleString("en-US")}</td>
                   <td className="fs-6">
                     <button
-                      id={`${elem.id}-${elem.product.id}`}
+                      id={`${elem.id}-${elem?.product.id}`}
                       className="btn btn-danger btn-options"
                       onClick={handleClick}
                     >
                       <img
-                        id={`${elem.id}-${elem.product.id}`}
+                        id={`${elem.id}-${elem?.product.id}`}
                         src={LogoEliminar}
                         className="img-options"
                         alt="eliminar"

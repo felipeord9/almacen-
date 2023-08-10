@@ -78,7 +78,7 @@ function Home() {
                               icon: "error",
                               button: "OK",
                               dangerMode: true,
-                              timer: 1500
+                              timer: 1500,
                             });
 
                           navigate(`/modulos/?bodega=${elemt.id}`);
@@ -96,6 +96,9 @@ function Home() {
             sheet="existencias"
           />
         </div>
+      </div>
+      <div>
+        <btn className="btn btn-sm btn-success fw-bold w-100" onClick={(e) => navigate('/ver/productos')}>Ver Productos</btn>
       </div>
       <table id="table-existence" className="d-none" style={{ fontSize: 11 }}>
         <thead>

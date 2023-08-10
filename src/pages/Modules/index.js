@@ -20,8 +20,6 @@ function Modules() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log(cellar)
-
   return (
     <div className="d-flex flex-column justify-content-center h-100 w-100 pt-4">
       <div className="d-flex flex-row justify-content-between align-items-center text-light">
