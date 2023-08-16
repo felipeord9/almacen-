@@ -158,7 +158,7 @@ function ModalAddProducts({ product, openModal, setOpen, loadData }) {
             <label>Foto</label>
             <input
               type="file"
-              accept=".jpg, .png"
+              accept=".jpg"
               className="form-control form-control-sm"
               onChange={handlerChangePhoto}
               required

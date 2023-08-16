@@ -90,13 +90,13 @@ function VerProductos() {
           onChange={handlerFilter}
         />
       </div>
-      <div className="row row-cols-auto justify-content-center mt-2">
+      <div className="row row-cols-sm-2 row-cols-lg-3 justify-content-start mt-2">
         {suggestions
           .slice(pagination.limit, pagination.offset)
           .map((elem, index) => (
-            <div>
+            <div className="d-flex justify-content-center">
               <div
-                className="card overflow-hidden m-1"
+                className="card overflow-hidden my-1"
                 style={{ width: "18rem", height: "12.5rem" }}
               >
                 <img
@@ -211,7 +211,7 @@ function VerProductos() {
           className="text-body-tertiary"
           style={{ cursor: "pointer" }}
           onClick={(e) => {
-            if (pagination.offset <= suggestions.length) {
+            if (pagination.offset < suggestions.length) {
               setPagination({
                 limit: pagination.limit + OFFSET,
                 offset: pagination.offset + OFFSET,
