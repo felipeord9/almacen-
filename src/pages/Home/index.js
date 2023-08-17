@@ -63,28 +63,7 @@ function Home() {
 
                     <Card
                       nombre={elemt.nombre}
-                      onClick={(e) => {
-                        sweal({
-                          text: "Ingrese la contraseña de la bodega",
-                          content: "input",
-                          button: {
-                            text: "Ingresar",
-                            closeModal: false,
-                          },
-                        }).then((password) => {
-                          if (password !== cellars[index].password)
-                            return sweal({
-                              text: "Contrasena Incorrecta",
-                              icon: "error",
-                              button: "OK",
-                              dangerMode: true,
-                              timer: 1500,
-                            });
-
-                          navigate(`/modulos/?bodega=${elemt.id}`);
-                          sweal.close();
-                        });
-                      }}
+                      onClick={(e) => navigate(`/modulos/?bodega=${elemt.id}`)}
                     />
                   </div>
                 </div>
