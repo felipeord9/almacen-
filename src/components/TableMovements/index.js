@@ -1,7 +1,9 @@
 import { useContext } from "react";
 import sweal from "sweetalert";
-import { updateMovement } from "../../services/movementService";
+import Swal from "sweetalert2"
 import Context from "../../context/userContext";
+import { updateMovement } from "../../services/movementService";
+import { config } from "../../config";
 import LogoEliminar from "../../assets/eliminar.png";
 import "./styles.css";
 
@@ -42,21 +44,19 @@ function TableMovements({ filterMovements, option }) {
         });
       }
     }
-    
-    sweal({
+    Swal.fire({
       text: "Ingrese la contraseña",
-      content: "input",
-      button: {
-        text: "Continuar",
-        closeModal: false,
-      },
-    }).then((password) => {
-      if (password !== "1118298640") {
+      input: 'password',
+      confirmButtonText: "Continuar"
+    })
+    .then(({value}) => {
+      if(value !== config.deletedPassword) {
         return sweal({
           text: "Contrasena Incorrecta",
           icon: "error",
           button: "OK",
-          dangerMode: true,
+          timer: 2000,
+          dangerMode: true
         });
       }
       sweal({
@@ -93,12 +93,12 @@ function TableMovements({ filterMovements, option }) {
           sweal({
             title: "CAMPOS REQUERIDOS",
             text: "La razón de la eliminación es obligatoria",
-            icon: "error",
+            icon: "warning",
             timer: 3000,
           });
         }
       });
-    });
+    })
   };
 
   return (

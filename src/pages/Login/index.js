@@ -4,18 +4,17 @@ import Context from "../../context/userContext";
 import { config } from "../../config";
 import Logo from "../../assets/logo-naranja.jpeg";
 import LogoUsuario from "../../assets/usuario.png";
-import LogoSesion from "../../assets/iniciar-sesion (1).png"
 import "./styles.css";
 
 function Login() {
-  const [numId, setNumId] = useState(NaN);
+  const [numId, setNumId] = useState('');
   const [showError, setShowError] = useState(false);
   const { colaborator, setColaborator } = useContext(Context);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     let { value } = e.target;
-    value = parseInt(value);
+    //value = parseInt(value);
     setNumId(value);
   };
 
@@ -64,7 +63,7 @@ function Login() {
             </p>
             <input
               className="input-login w-100 mb-3 ps-2 form-control"
-              type="number"
+              type="password"
               value={numId}
               min={0}
               placeholder="C.C"

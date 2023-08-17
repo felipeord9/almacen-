@@ -1,4 +1,5 @@
 export const config = {
-    apiUrl: "http://192.168.4.111:3001/api/v1" || "http://localhost:3001/api/v1",
-    apiImg: "http://192.168.4.111:3001"
+    apiUrl: process.env.REACT_APP_API_URL || "http://localhost:3001/api/v1",
+    apiImg: process.env.REACT_APP_API_IMG,
+    deletedPassword: process.env.REACT_APP_DELETED_PASSWORD
 }
