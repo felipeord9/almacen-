@@ -7,7 +7,7 @@ import LogoUsuario from "../../assets/usuario.png";
 import "./styles.css";
 
 function Login() {
-  const [numId, setNumId] = useState('');
+  const [numId, setNumId] = useState(null);
   const [showError, setShowError] = useState(false);
   const { colaborator, setColaborator } = useContext(Context);
   const navigate = useNavigate();
