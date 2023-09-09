@@ -187,7 +187,7 @@ function Movimientos() {
         </thead>
         <tbody>
           {Object.entries(filterMovements).length > 0
-            ? filterMovements.map((elem) => (
+            && filterMovements.map((elem) => (
                 <tr>
                   <td>{elem.product.id}</td>
                   <td>{elem.product.description}</td>
@@ -207,8 +207,7 @@ function Movimientos() {
                   </td>
                   <td>{elem.removalReason}</td>
                 </tr>
-              ))
-            : null}
+              ))}
           {filterMovements.amount ? (
             <>
               <tr>

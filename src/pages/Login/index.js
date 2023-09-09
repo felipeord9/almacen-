@@ -20,18 +20,24 @@ function Login() {
 
   const handleClick = (e) => {
     e.preventDefault();
-    fetch(`${config.apiUrl}/colaborators/${numId}`)
+    fetch(`${config.apiUrl}/colaborators/${parseInt(numId)}`)
       .then((res) => res.json())
       .then((res) => {
-        if (res.data) {
+        /* if (res.data) { */
           setColaborator(res.data);
           navigate("/home");
-        } else {
-          setShowError(true) 
+        /* } else {
+          setShowError(true);
           setTimeout(() => {
-            setShowError(false)
-          }, 2000)
-        }
+            setShowError(false);
+          }, 2000);
+        } */
+      })
+      .catch((error) => {
+        setShowError(true);
+        setTimeout(() => {
+          setShowError(false);
+        }, 2000);
       });
   };
 
@@ -77,11 +83,11 @@ function Login() {
             >
               <strong className="w-100 m-0">INGRESAR</strong>
             </button>
-            {
-              showError ? (
-                <p className="text-danger m-0 mt-1 p-0">No existe el colaborador</p>
-              ) : null
-            }
+            {showError ? (
+              <p className="text-danger m-0 mt-1 p-0">
+                No existe el colaborador
+              </p>
+            ) : null}
           </form>
         </div>
       </div>
